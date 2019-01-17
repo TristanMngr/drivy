@@ -112,19 +112,19 @@ describe Rental do
     end
   end
 
-  describe 'self.apply_price_on_instances' do
+  describe 'self.apply_price_and_comission_on_instances' do
     let(:rental_instances) do
       [Rental.new(1, Car.new(1, 2000, 10), '2017-12-8', '2017-12-10', 100),
        Rental.new(2, Car.new(2, 3000, 15), '2017-12-8', '2017-12-10', 200)]
     end
 
     it 'should compute price on each instances of array' do
-      expect(Rental.apply_price_on_instances(rental_instances)
+      expect(Rental.apply_price_and_comission_on_instances(rental_instances)
       .map(&:rental_price)).to eq([4600, 8400])
     end
 
     it 'should compute price on each instances of array without longer rental option' do
-      expect(Rental.apply_price_on_instances(rental_instances, false)
+      expect(Rental.apply_price_and_comission_on_instances(rental_instances, false)
       .map(&:rental_price)).to eq([5000, 9000])
     end
   end
@@ -139,6 +139,46 @@ describe Rental do
       expect(rental_one_day.price_per_day_for_longer_rental).to eq(90)
       expect(rental_five_day.price_per_day_for_longer_rental).to eq(70)
       expect(rental_ten_day.price_per_day_for_longer_rental).to eq(50)
+    end
+  end
+
+  describe 'calcul_commission' do
+    let(:car_one) { Car.new(1, 2000, 10) }
+    let(:rental) { Rental.new(1, car_one, '2018-12-8', '2018-12-10', 100) }
+
+    it 'should return the commission' do
+      expect(rental.calcul_commission).to eq(1380)
+      expect(rental.comission).to eq(1380)
+    end
+  end
+
+  describe 'calcul_insurance_fee' do
+    let(:car_one) { Car.new(1, 2000, 10) }
+    let(:rental) { Rental.new(1, car_one, '2018-12-8', '2018-12-10', 100) }
+
+    it 'should return the insurance_fee' do
+      expect(rental.calcul_insurance_fee).to eq(690)
+      expect(rental.insurance_fee).to eq(690)
+    end
+  end
+
+  describe 'calcul_assistance_fee' do
+    let(:car_one) { Car.new(1, 2000, 10) }
+    let(:rental) { Rental.new(1, car_one, '2018-12-8', '2018-12-10', 100) }
+
+    it 'should return the assistance_fee' do
+      expect(rental.calcul_assistance_fee).to eq(200)
+      expect(rental.assistance_fee).to eq(200)
+    end
+  end
+
+  describe 'calcul_drivy_fee' do
+    let(:car_one) { Car.new(1, 2000, 10) }
+    let(:rental) { Rental.new(1, car_one, '2018-12-8', '2018-12-10', 100) }
+
+    it 'should return the drivy_fee' do
+      expect(rental.calcul_drivy_fee).to eq(490)
+      expect(rental.drivy_fee).to eq(490)
     end
   end
 end

@@ -4,7 +4,7 @@ require './classes/car'
 
 def build_hash_output(input_json)
   rentals = Rental.create_rental_instances(input_json)
-  Rental.apply_price_on_instances(rentals)
+  Rental.apply_price_and_comission_on_instances(rentals)
 
   hash_output = { rental: [] }
 
