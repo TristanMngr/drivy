@@ -10,7 +10,7 @@ class Rental
 
   attr_accessor :id, :car, :start_date, :end_date, :distance
   attr_reader :rental_price, :rental_days, :insurance_fee,
-              :assistance_fee, :drivy_fee, :comission
+              :assistance_fee, :drivy_fee, :owner_share, :comission, :actions
 
   def initialize(id, car, start_date, end_date, distance)
     @id = id
@@ -81,10 +81,31 @@ class Rental
     @drivy_fee = @comission - (@insurance_fee + assistance_fee)
   end
 
+  def calcul_owner_share
+    @rental_price ||= calcul_price
+    @comission ||= calcul_commission
+    @owner_share = @rental_price - @comission
+  end
+
   def compute_comissions
     calcul_insurance_fee
     calcul_assistance_fee
     calcul_drivy_fee
+    calcul_owner_share
+  end
+
+  def build_actions_payment
+    if insurance_fee.nil? || assistance_fee.nil? || drivy_fee.nil? || owner_share.nil?
+      compute_comissions
+    end
+
+    driver = { who: 'driver', type: 'debit', amount: @rental_price }
+    owner = { who: 'owner', type: 'credit', amount: @owner_share }
+    insurance = { who: 'insurance', type: 'credit', amount: @insurance_fee }
+    assistance = { who: 'assistance', type: 'credit', amount: @assistance_fee }
+    drivy = { who: 'drivy', type: 'credit', amount: @drivy_fee }
+
+    @actions = [driver, owner, insurance, assistance, drivy]
   end
 
   def self.apply_price_and_comission_on_instances(rentals,

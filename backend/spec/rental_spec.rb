@@ -181,4 +181,38 @@ describe Rental do
       expect(rental.drivy_fee).to eq(490)
     end
   end
+
+  describe 'compute_comissions' do
+    let(:car_one) { Car.new(1, 2000, 10) }
+    let(:rental) { Rental.new(1, car_one, '2018-12-8', '2018-12-10', 100) }
+
+    it 'should update rental attribute' do
+      expect(rental.compute_comissions)
+      expect(rental.insurance_fee).to eq(690)
+      expect(rental.assistance_fee).to eq(200)
+      expect(rental.drivy_fee).to eq(490)
+      expect(rental.owner_share).to eq(3220)
+    end
+  end
+
+  describe 'build_actions_payment' do
+    let(:car_one) { Car.new(1, 2000, 10) }
+    let(:rental) { Rental.new(1, car_one, '2018-12-8', '2018-12-10', 100) }
+
+    it 'should update when insurance_fee assistance_fee driby_fee or owner_share is nil' do
+      expect(rental.build_actions_payment)
+      expect(rental.insurance_fee).to eq(690)
+      expect(rental.assistance_fee).to eq(200)
+      expect(rental.drivy_fee).to eq(490)
+      expect(rental.owner_share).to eq(3220)
+    end
+
+    it 'should build actions hash' do
+      expect(rental.build_actions_payment).to eq([{ amount: 4600, type: 'debit', who: 'driver' },
+                                                  { amount: 3220, type: 'credit', who: 'owner' },
+                                                  { amount: 690, type: 'credit', who: 'insurance' },
+                                                  { amount: 200, type: 'credit', who: 'assistance' },
+                                                  { amount: 490, type: 'credit', who: 'drivy' }])
+    end
+  end
 end
