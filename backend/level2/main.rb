@@ -1,0 +1,21 @@
+require './utils'
+require './classes/rental'
+require './classes/car'
+
+def build_hash_output(input_json)
+  rentals = Rental.create_rental_instances(input_json)
+  Rental.apply_price_on_instances(rentals)
+
+  hash_output = { rental: [] }
+
+  rentals.each do |rental|
+    hash_output[:rental] << { id: rental.id, price: rental.rental_price }
+  end
+  hash_output
+end
+
+input_json = Utils.read_from_json('./level2/data/input.json')
+
+File.open('./level2/data/output.json', 'w') do |f|
+  f.write(build_hash_output(input_json).to_json)
+end
