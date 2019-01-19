@@ -9,14 +9,12 @@ class Car
     @price_per_km = price_per_km
   end
 
+  # class method to instance all cars from json file
   def self.create_car_instances(input_json)
-    cars = []
-    input_json['cars'].each do |car|
-      car = Car.new(car['id'],
-                    car['price_per_day'],
-                    car['price_per_km'])
-      cars << car
+    input_json['cars'].map do |car|
+      Car.new(car['id'],
+              car['price_per_day'],
+              car['price_per_km'])
     end
-    cars
   end
 end

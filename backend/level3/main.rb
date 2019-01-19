@@ -1,27 +1,12 @@
-require './utils'
+require './classes/utils'
 require './classes/rental'
 require './classes/car'
 
-def build_hash_output(input_json)
-  rentals = Rental.create_rental_instances(input_json)
-  Rental.apply_price_and_comission_on_instances(rentals)
+FILE_INPUT_PATH = './level3/data/input.json'.freeze
+FILE_OUTPUT_PATH = './level3/data/output.json'.freeze
 
-  hash_output = { rental: [] }
+input_json = Utils.read_from_json(FILE_INPUT_PATH)
 
-  rentals.each do |rental|
-    hash_output[:rental] << { id: rental.id,
-                              price: rental.rental_price,
-                              commission: {
-                                insurance_fee: rental.insurance_fee,
-                                assistance_fee: rental.assistance_fee,
-                                drivy_fee: rental.drivy_fee
-                              } }
-  end
-  hash_output
-end
-
-input_json = Utils.read_from_json('./level3/data/input.json')
-
-File.open('./level3/data/output.json', 'w') do |f|
-  f.write(build_hash_output(input_json).to_json)
+File.open(FILE_OUTPUT_PATH, 'w') do |f|
+  f.write(Utils.build_hash_output_level_three(input_json).to_json)
 end
